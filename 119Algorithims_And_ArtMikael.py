@@ -1,19 +1,23 @@
-import math
 import turtle as trtl
 
-sizes = {"small": 0.6, "medium": 0.9, "large": 1.1}
-seal_size = input("Do you want your seal to be small, medium, or large? ").lower()
+seal_size = trtl.textinput("Size" , "Do you want your seal to be small, medium, or large? ")
+size = {"small": 0.6, "medium": 0.9, "large": 1.1}
 
-if seal_size not in sizes:
-    print("Invalid input. Please choose small, medium, or large.")
-    exit()
+if seal_size not in size:
+    seal_size = trtl.textinput("Size", "Invalid input. Please type small, medium, or large: ")
 
-scale = sizes[seal_size]
-appendage_scale = scale
+if seal_size not in size:
+    seal_size = trtl.textinput("Size", "Last chance. Type only small, medium, or large: ")
+
+if seal_size not in size:
+    print("Invalid input. Using medium by default.")
+    seal_size = "medium"
+
+scale = size[seal_size]
 import random
 
-seal_color = random.choice(["gray", "lightgray", "white"])
-
+seal_colors = ["gray", "lightgray", "darkgray"]
+seal_color = random.choice(seal_colors)
 
 screen = trtl.Screen()
 seal = trtl.Turtle()
@@ -21,90 +25,141 @@ seal.speed(0)
 seal.hideturtle()
 seal.penup()
 
-# body: oval
-# head: separate oval attached to body
-
-def draw_ellipse(center_x, center_y, width, height, color):
-    seal.fillcolor(color)
-    seal.pencolor("dimgray")
-    seal.pensize(2)
-    seal.begin_fill()
-    seal.penup()
-    seal.goto(center_x + width / 2, center_y)
-    seal.pendown()
-    for angle in range(0, 361, 5):
-        rad = math.radians(angle)
-        x = center_x + (width / 2) * math.cos(rad)
-        y = center_y + (height / 2) * math.sin(rad)
-        seal.goto(x, y)
-    seal.end_fill()
-    seal.penup()
-
-# body uses user's size choice
-body = (0, -20 * scale, 220 * scale, 150 * scale)
-# head and appendages stay visible at small size but still move with the chosen size
-head_center = (80 * appendage_scale, 18 * appendage_scale)
-head_radius = 48 * appendage_scale
-flipper_forward = 15 * appendage_scale
-
-# flippers and tail scale with size change
-left_flipper_top = [
-    (-62 * appendage_scale + flipper_forward, 18 * appendage_scale),
-    (-5 * appendage_scale + flipper_forward, 105 * appendage_scale),
-    (38 * appendage_scale + flipper_forward, 88 * appendage_scale),
-    (30 * appendage_scale + flipper_forward, 35 * appendage_scale),
-    (-82 * appendage_scale + flipper_forward, 0 * appendage_scale),
-]
-
-left_flipper_bottom = [
-    (-62 * appendage_scale + flipper_forward, -45 * appendage_scale),
-    (-5 * appendage_scale + flipper_forward, -145 * appendage_scale),
-    (38 * appendage_scale + flipper_forward, -115 * appendage_scale),
-    (30 * appendage_scale + flipper_forward, -62 * appendage_scale),
-    (-82 * appendage_scale + flipper_forward, -28 * appendage_scale),
-]
-
-tail = [
-    (-72 * appendage_scale, -28 * appendage_scale),
-    (-160 * appendage_scale, 8 * appendage_scale),
-    (-140 * appendage_scale, -38 * appendage_scale),
-    (-160 * appendage_scale, -75 * appendage_scale),
-    (-62 * appendage_scale, -58 * appendage_scale),
-]
-
-
-def draw_polygon(points, color):
-    seal.fillcolor(color)
-    seal.pencolor("dimgray")
-    seal.pensize(2)
-    seal.begin_fill()
-    seal.penup()
-    seal.goto(points[0][0], points[0][1])
-    seal.pendown()
-    for x, y in points[1:]:
-        seal.goto(x, y)
-    seal.goto(points[0][0], points[0][1])
-    seal.end_fill()
-    seal.penup()
-
-# draw flippers and tail first so the body covers their attachment edges
-for points in [left_flipper_top, left_flipper_bottom, tail]:
-    draw_polygon(points, seal_color)
-
-# draw the body and keep its oval dimensions exact
-cx, cy, w, h = body
-draw_ellipse(cx, cy, w, h, seal_color)
-
-# Fill the head over the body first, then draw only its circular outline.
-seal.penup()
-seal.goto(head_center)
-seal.dot(2 * head_radius, seal_color)
-seal.pencolor("dimgray")
-seal.pensize(2)
-seal.setheading(0)
-seal.goto(head_center[0], head_center[1] - head_radius)
+# body
+seal.fillcolor(seal_color)
+seal.begin_fill()
+seal.showturtle()
 seal.pendown()
-seal.circle(head_radius)
+seal.setheading(-60)
+seal.goto(0, 0 * scale)
+seal.left(90)
+seal.circle(80 * scale, 180, 50)
+seal.forward(30 * scale)
+seal.right(360)
+seal.circle(80 * scale, 180, 50)
+seal.forward(30 * scale)
+seal.end_fill()
 seal.penup()
+
+# head
+seal.goto(38 * scale, 55 * scale)
+seal.pendown()
+seal.fillcolor(seal_color)
+seal.begin_fill()
+seal.circle(50 * scale)
+seal.end_fill()
+seal.penup()
+
+# left flipper
+seal.goto(-40 * scale, 120 * scale)
+seal.pendown()
+seal.fillcolor(seal_color)
+seal.begin_fill()
+seal.setheading(210)
+seal.goto(-20 * scale, 190 * scale)
+seal.goto(-75 * scale, 200 * scale)
+seal.goto(-50 * scale, 120 * scale)
+seal.goto(-40 * scale, 120 * scale)
+seal.end_fill()
+seal.penup()
+
+# right flipper
+seal.goto(50 * scale, -5 * scale)
+seal.pendown()
+seal.fillcolor(seal_color)
+seal.begin_fill()
+seal.setheading(210)
+seal.goto(0 * scale, 30 * scale)
+seal.goto(-10 * scale, 30 * scale)
+seal.goto(5 * scale, -40 * scale)
+seal.goto(50 * scale, -5 * scale)
+seal.end_fill()
+seal.penup()
+
+# eyes
+seal.goto(35 * scale, 120 * scale)
+seal.pencolor("black")
+seal.pendown()
+seal.circle(10 * scale)
+seal.penup()
+seal.goto(0 * scale, 120 * scale)
+seal.pencolor("black")
+seal.pendown()
+seal.circle(10 * scale)
+seal.penup()
+
+# whiskers
+whisker_input = trtl.textinput("whiskers" , "How many whiskers do you want?(2-8) ")
+whiskers = int(whisker_input)
+
+if whiskers < 2 or whiskers > 8:
+    whisker_input = trtl.textinput("Whiskers", "Please type a number from 2 to 8: ")
+    whiskers = int(whisker_input)
+
+if whiskers < 2 or whiskers > 8:
+    whiskers = 8
+    print("Invalid input. Using 8 whiskers by default.")
+
+seal.color("black")
+whisker_length = 10 * scale
+seal.pensize(1 * scale)
+#Draw whiskers
+n = 0
+while (n < whiskers):
+      seal.penup()
+      seal.goto(20 * scale,75 * scale)
+      seal.pendown()
+      if n < whiskers / 2:
+        seal.setheading(180 - (n * 20))
+      else:
+        seal.setheading((n - (whiskers / 2)) * 20)
+      seal.forward(whisker_length)
+      n = n + 1
+whisker_side =  whiskers % 8
+
+# tail
+seal.pencolor("black")
+seal.penup()
+seal.goto(-140 * scale, 20 * scale)
+seal.pendown()
+seal.fillcolor(seal_color)
+seal.begin_fill()
+seal.goto(-170 * scale, 45 * scale)
+seal.goto(-150 * scale, -10 * scale)
+seal.goto(-140 * scale, 20 * scale)
+seal.end_fill()
+seal.penup()
+
+# Make spots
+
+spot = (10 * scale, 0 * scale), (9 * scale, 2 * scale), (7 * scale, 4 * scale), (4 * scale, 5 * scale), (0 * scale, 5 * scale), (-4 * scale, 5 * scale), (-7 * scale, 4 * scale), (-9 * scale, 2 * scale),(-10 * scale, 0 * scale), (-9 * scale, -2 * scale), (-7 * scale, -4 * scale), (-4 * scale, -5 * scale), (0 * scale, -5 * scale), (4 * scale, -5 * scale), (7 * scale, -4 * scale), (9 * scale, -2 * scale)
+screen.register_shape("my_spot", spot)
+my_spot = trtl.Turtle(shape="my_spot")
+my_spot.color("black")
+my_spot.fillcolor("white")
+my_spot.pendown()
+my_spot.shapesize(1 * scale)
+my_spot.penup()
+my_spot.goto(-60 * scale, 20 * scale)
+my_spot.left(90)
+my_spot.stamp()
+my_spot.goto(-100 * scale, 20 * scale )
+my_spot.stamp()
+my_spot.goto(-120 * scale, 40 * scale)
+my_spot.stamp()
+my_spot.goto(-80 * scale, 40 * scale )
+my_spot.stamp()
+my_spot.goto(-130 * scale, 60 * scale)
+my_spot.stamp()
+my_spot.goto(-90 * scale, 60 * scale)
+my_spot.stamp()
+my_spot.goto(-120 * scale, 80 * scale)
+my_spot.stamp()
+my_spot.goto(-80 * scale, 80 * scale)
+my_spot.stamp()
+my_spot.goto( -80 * scale, 0 * scale)
+my_spot.stamp()
+my_spot.goto(-40 * scale, 0 * scale)
 
 screen.exitonclick()
+screen.mainloop()
